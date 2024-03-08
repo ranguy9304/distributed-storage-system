@@ -122,8 +122,11 @@ def test():
 
     temp = storage.fetch_all('data')
     print(temp)
+    storage.put_data('data', {'content': "my cdcssdc"}, "id = 1")
 
+    temp = storage.fetch_all('data')
+    print(type(temp[0]))
 
 # Example usage
-if __name__ == "__main__":
-    test()
+# if __name__ == "__main__":
+#     test()

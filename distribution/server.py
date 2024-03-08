@@ -2,6 +2,7 @@ import socket
 import threading
 from msg_classes import *
 import pickle
+from db_uitls import *
 # Server setup
 host = '127.0.0.1'  # Listen on all network interfaces
 # port = 12345
@@ -13,6 +14,8 @@ clients = []
 nicknames = []
 data = []
 token = 0
+
+
 
 
 
@@ -46,7 +49,7 @@ def getData():
 
                 for objs in JsonPacket(client.recv(1024)).msg:
                     temp.append(objs)
-            for objs in data:
+            for objs in storage.fetch_all('data'):
                 temp.append(objs)
             print("total data")
             print_data(temp)
@@ -58,8 +61,12 @@ def getData():
 
         sendMsg = JsonPacket.POSTPacket(datain)
         if token == 0:
-            
-            data.append(JsonPacket(sendMsg))
+            print(JsonPacket(sendMsg).getJson())
+            data.append(JsonPacket(sendMsg).getJson())
+            print(type(JsonPacket(sendMsg).msg))
+            storage.post_data('data', {'id':None, 'type': JsonPacket(sendMsg).type, 'msg': json.dumps(JsonPacket(sendMsg).msg)})
+            temp = storage.fetch_all('data')
+            print(temp)
         else:
 
             clients[token-1].send(sendMsg)
@@ -73,6 +80,20 @@ def getData():
 
 
 if __name__ == "__main__":
+    storage = SQLStorage('messages.db')
+    # Define the schema for the 'data' table
+    # Here, we're assuming the data have an id and content
+    data_table_schema = 'id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, msg TEXT'
+    # Set up the 'data' table
+    storage.setup_tables('data', data_table_schema)
+    # storage.post_data('data', {'id':None, 'type': "hello", 'msg': "my g"})
+
+    # temp = storage.fetch_all('data')
+    # print(temp)
+    # storage.put_data('data', {'content': "my cdcssdc"}, "id = 1")
+
+    # temp = storage.fetch_all('data')
+    # print(type(temp[0]))
     receive_thread = threading.Thread(target=receive)
     receive_thread.start()
     data_thread = threading.Thread(target=getData)
