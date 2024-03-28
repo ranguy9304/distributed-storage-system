@@ -1,5 +1,14 @@
 import sqlite3
 
+class TableConf:
+    def __init__(self):
+        self.columns = None
+        self.col_names =None
+        self.schema_str =None
+    # columns = None
+    # col_names =None
+    # schema_str =None 
+
 class SQLStorage:
     def __init__(self, db_name):
         self.db_name = db_name

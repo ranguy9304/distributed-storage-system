@@ -20,6 +20,10 @@ class Data:
 
 	def getJson(self):
 		return json.dumps(self.__dict__)
+	@staticmethod
+	def createDataPack(**vals):
+		return json.dumps(vals)
+
 
 	
 
@@ -34,13 +38,14 @@ class JsonPacket:
 				self.type=rcvmsg.type
 				if self.type==POST :
 					self.msg=json.loads(rcvmsg.msg)
-				elif self.type==FETCH_RESP :
+				elif self.type==FETCH_RESP or self.type == SETUP_TABLE :
 					self.msg = pickle.loads(rcvmsg.msg)
 	@staticmethod
 	def POSTPacket(data):
 		ret = JsonPacket()
 		ret.type=POST
-		ret.msg=data.getJson()
+		# ret.msg=data.getJson()
+		ret.msg=data
 		return pickle.dumps(ret)
 	@staticmethod
 	def FETCHPacket(data = None):
@@ -54,6 +59,25 @@ class JsonPacket:
 		ret = JsonPacket()
 		ret.type=FETCH_RESP
 		ret.msg=pickle.dumps(data)
+		return pickle.dumps(ret)
+	@staticmethod
+	def SETUPPacket(data):
+		ret = JsonPacket()
+		ret.type=SETUP_TABLE
+		print("in packet cre ---------\n\n ")
+		# print(data.col_names)
+		ret.msg=pickle.dumps(data)
+		check = pickle.loads(ret.msg)
+		
+		# print(check.col_names)
+		print("------\n")# make it send json where  the msg is in pickle 
+		return pickle.dumps(ret)
+	@staticmethod
+	def UPDATEPacket(data):
+		ret = JsonPacket()
+		ret.type=UPDATE
+		# ret.msg=data.getJson()
+		ret.msg=data
 		return pickle.dumps(ret)
 	def __str__(self):
 		# if self.type == FETCH_RESP:
