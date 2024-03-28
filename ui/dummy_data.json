@@ -1,0 +1,54 @@
+[
+  {
+    "node": "Node 1",
+    "column_names": [
+      "Color",
+      "Shape",
+      "Size"
+    ],
+    "data": [
+      "red",
+      "circle",
+      "large"
+    ]
+  },
+  {
+    "node": "Node 2",
+    "column_names": [
+      "Color",
+      "Shape",
+      "Size"
+    ],
+    "data": [
+      "blue",
+      "square",
+      "small"
+    ]
+  },
+  {
+    "node": "Node 3",
+    "column_names": [
+      "Color",
+      "Shape",
+      "Size"
+    ],
+    "data": [
+      "green",
+      "triangle",
+      "medium"
+    ]
+  },
+  {
+    "node": "Node 1",
+    "column_names": [
+      "Color",
+      "Shape",
+      "Size"
+    ],
+    "data": [
+      "yellow",
+      "rectangle",
+      "large"
+    ]
+  }
+]

@@ -1,0 +1,8 @@
+class SQLStorage:
+    # ...
+
+    def fetch_records(self, table_name, count):
+        query = f"SELECT * FROM {table_name} LIMIT {count}"
+        self.cursor.execute(query)
+        records = self.cursor.fetchall()
+        return records
