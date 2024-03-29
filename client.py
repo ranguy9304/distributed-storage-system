@@ -1,7 +1,7 @@
 import socket
 import threading
-from msg_classes import *
-from db_uitls import *
+from distribution.msg_classes import *
+from distribution.db_uitls import *
 # Server connection details
 host = '127.0.0.1'  # Server's IP address
 import pickle

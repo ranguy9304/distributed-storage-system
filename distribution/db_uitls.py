@@ -81,6 +81,20 @@ class SQLStorage:
         results = cursor.fetchall()
         conn.close()
         return results
+    def get_columns(self, table_name):
+        """Return the column names and their types in a list and a dictionary."""
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        column_info = cursor.fetchall()
+        conn.close()
+
+        print(column_info)
+
+        column_names = [column[1] + " " + column[2] for column in column_info]
+        column_types = {column[1]: column[2] for column in column_info}
+
+        return column_names, column_types
 
 
 def manage_products():

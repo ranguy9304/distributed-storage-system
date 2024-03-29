@@ -197,13 +197,26 @@ class ComsManager:
         self.nicknames = []
         self.data = []
         self.token = 0
+    def load_table(self):
+        self.storage = SQLStorage('messages.db')
+        # find out the existing columns in the table
+        self.table.columns,self.table.col_names = self.storage.get_columns('data')
+        self.tablesCreated = True
+        receive_thread = threading.Thread(target=self.receive)
+        receive_thread.start()
+        # data_thread = threading.Thread(target=self.manageData)
+        # data_thread.start()
+        alive_thread = threading.Thread(target=self.isAlive)
+        alive_thread.start()
 
     def create_table(self,columns,col_names):
         self.table.columns = columns
         self.table.col_names = col_names
         self.storage = SQLStorage('messages.db')
         
-        data_schema_dynamic = 'id INTEGER PRIMARY KEY AUTOINCREMENT, '+ ', '.join(self.table.columns)
+        data_schema_dynamic = 'id INTEGER PRIMARY KEY AUTOINCREMENT,  node_id INTEGER ,'+ ', '.join(self.table.columns)
+        self.table.columns.append('node_id INTEGER')
+        self.table.columns.append('id INTEGER')
         print(data_schema_dynamic)
         print(self.table.col_names)
         self.table.schema_str=data_schema_dynamic
@@ -253,11 +266,12 @@ class ComsManager:
             for objs in JsonPacket(client.recv(1024)).msg:
                 temp.append(objs)
         for objs in self.storage.fetch_all('data'):
+            print(objs)
             temp.append(objs)
         return temp
-    def deteteData(self,datain_dict,whereclause):
+    def deteteData(self,whereclause):
         # try : 
-
+        datain_dict ={}
         self.storage.delete_data('data', whereclause)
         datain_dict['WHERE'] = whereclause
         datain = json.dumps(datain_dict)
@@ -278,7 +292,8 @@ class ComsManager:
         print(sendMsg)
         self.broadcast(sendMsg, None)
         return "success"
-    def getData(self,datain_dict,whereclause):
+    def getData(self,whereclause):
+        datain_dict ={}
         datain_dict['WHERE'] = whereclause
         datain = json.dumps(datain_dict)
         del datain_dict['WHERE']
@@ -303,15 +318,18 @@ class ComsManager:
             sendMsg = JsonPacket.POSTPacket(datain)
             self.data.append(JsonPacket(sendMsg).getJson())
             datain_dict['id'] = None
+            datain_dict['node_id'] = self.token
             self.storage.post_data('data', datain_dict)
          
         else:
+            datain_dict['node_id'] = self.token
             datain = json.dumps(datain_dict)
             sendMsg = JsonPacket.POSTPacket(datain)
             self.clients[self.token-1].send(sendMsg)
 
         # #  distribution algo
         self.token = (self.token + 1 )% (len(self.clients )+1)
+    
         
         
 
