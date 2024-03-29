@@ -1,4 +1,4 @@
-from settings import *
+from distribution.settings import *
 import json
 import pickle
 
@@ -36,7 +36,7 @@ class JsonPacket:
 			rcvmsg =pickle.loads(data)
 			if rcvmsg.type :
 				self.type=rcvmsg.type
-				if self.type==POST or self.type==UPDATE or self.type==GET:
+				if self.type==POST or self.type==UPDATE or self.type==GET or self.type==DELETE:
 					self.msg=json.loads(rcvmsg.msg)
 				elif self.type==FETCH_RESP or self.type == SETUP_TABLE or self.type == GET_RESP:
 					self.msg = pickle.loads(rcvmsg.msg)
@@ -95,6 +95,13 @@ class JsonPacket:
 	def GETPacket(data):
 		ret = JsonPacket()
 		ret.type=GET
+		# ret.msg=data.getJson()
+		ret.msg=data
+		return pickle.dumps(ret)
+	@staticmethod
+	def DELETEPacket(data):
+		ret = JsonPacket()
+		ret.type=DELETE
 		# ret.msg=data.getJson()
 		ret.msg=data
 		return pickle.dumps(ret)

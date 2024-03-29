@@ -59,7 +59,7 @@ class SQLStorage:
         cursor = conn.cursor()
         query = f"SELECT * FROM {table_name} WHERE {condition}"
         cursor.execute(query)
-        result = cursor.fetchone()
+        result = cursor.fetchall()
         conn.close()
         return result
 

@@ -76,7 +76,15 @@ def receive():
                 print("get data")
                 print(recvMsg.msg)
                 client.send(datas)
-        
+        elif recvMsg.type == DELETE:
+            whereclause = recvMsg.msg['WHERE']
+            storage.delete_data('data', whereclause)
+            temp = storage.fetch_all('data')
+            print(temp)
+            temp = []
+            print("Data received")
+            print_data(data)
+
 
 receive_thread = threading.Thread(target=receive)
 receive_thread.start()

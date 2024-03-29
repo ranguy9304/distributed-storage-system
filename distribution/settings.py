@@ -6,8 +6,9 @@ UPDATE = "---updatedata---"
 ISALIVE = "---isalive---"
 GET = "---getdata---"
 GET_RESP = "---getresp---"
+DELETE = "---deletedata---"
 
-PORT = 12346
+PORT = 12345
 def print_data(data):
     print("---------DATA--------")
     for i in data:
