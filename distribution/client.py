@@ -60,6 +60,22 @@ def receive():
             storage.put_data('data', recvMsg.msg,whereclause)
             temp = storage.fetch_all('data')
             print(temp)
+        elif recvMsg.type == ISALIVE:
+            print("Server is alive")
+        elif recvMsg.type == GET:
+            print(recvMsg.msg['WHERE'])
+            local_data =storage.get_data('data',recvMsg.msg['WHERE'])
+            print(local_data)
+            if local_data == None:
+                datas = JsonPacket.GET_RESPPacket([])
+                print("get data")
+                print(recvMsg.msg)
+                client.send(datas)
+            else:
+                datas = JsonPacket.GET_RESPPacket(storage.get_data('data',recvMsg.msg['WHERE']))
+                print("get data")
+                print(recvMsg.msg)
+                client.send(datas)
         
 
 receive_thread = threading.Thread(target=receive)

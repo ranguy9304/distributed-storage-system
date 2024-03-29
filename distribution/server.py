@@ -3,6 +3,10 @@ import threading
 from msg_classes import *
 import pickle
 from db_uitls import *
+# import sleep
+import time
+
+
 # Server setup
 host = '127.0.0.1'  # Listen on all network interfaces
 # port = 12345
@@ -25,7 +29,13 @@ table = TableConf()
 def broadcast(message, source):
     for client in clients:
         if client != source:
-            client.send(message)
+            try:
+                client.send(message)
+            except:
+                index = clients.index(client)
+                clients.remove(client)
+                client.close()
+                
 
 
 
@@ -37,6 +47,20 @@ def receive():
         client.send(setupmsg)
         clients.append(client)
 
+def isAlive():
+    while True:
+        time.sleep(2)
+        for client in clients:
+            try:
+                client.send(JsonPacket.ISALIVEPacket())
+            except:
+                index = clients.index(client)
+                clients.remove(client)
+                client.close()
+                # nickname = nicknames[index]
+                # broadcast(f"{nickname} left the chat!".encode('utf-8'), None)
+                # nicknames.remove(nickname)
+                break
 
 
 def getData():
@@ -86,7 +110,29 @@ def getData():
             sendMsg = JsonPacket.UPDATEPacket(datain)
             print(sendMsg)
 
+            
+        if input_sep_vals[0] == GET:
+            whereclause = input("input WHERE CLAUSE : ")
+            datain_dict['WHERE'] = whereclause
+            datain = json.dumps(datain_dict)
+            del datain_dict['WHERE']
+            # sendMsg = JsonPacket.UPDATEPacket(datain)
+            
+            sendMsg = JsonPacket.GETPacket(datain)
+            print(sendMsg)
             broadcast(sendMsg, None)
+            temp =[]
+            for client in clients:
+                for objs in JsonPacket(client.recv(1024)).msg:
+                    temp.append(objs)
+            datat =storage.get_data('data', whereclause)
+            if datat != None:
+                for objs in datat:
+                    temp.append(objs)
+            print("total data")
+            print_data(temp)
+            continue
+
 
         
         
@@ -168,4 +214,6 @@ if __name__ == "__main__":
     receive_thread.start()
     data_thread = threading.Thread(target=getData)
     data_thread.start()
+    alive_thread = threading.Thread(target=isAlive)
+    alive_thread.start()
 

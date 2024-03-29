@@ -36,9 +36,9 @@ class JsonPacket:
 			rcvmsg =pickle.loads(data)
 			if rcvmsg.type :
 				self.type=rcvmsg.type
-				if self.type==POST or self.type==UPDATE:
+				if self.type==POST or self.type==UPDATE or self.type==GET:
 					self.msg=json.loads(rcvmsg.msg)
-				elif self.type==FETCH_RESP or self.type == SETUP_TABLE :
+				elif self.type==FETCH_RESP or self.type == SETUP_TABLE or self.type == GET_RESP:
 					self.msg = pickle.loads(rcvmsg.msg)
 	@staticmethod
 	def POSTPacket(data):
@@ -76,6 +76,25 @@ class JsonPacket:
 	def UPDATEPacket(data):
 		ret = JsonPacket()
 		ret.type=UPDATE
+		# ret.msg=data.getJson()
+		ret.msg=data
+		return pickle.dumps(ret)
+	@staticmethod
+	def ISALIVEPacket():
+		ret = JsonPacket()
+		ret.type=ISALIVE
+		ret.msg=None
+		return pickle.dumps(ret)
+	@staticmethod
+	def GET_RESPPacket(data):
+		ret = JsonPacket()
+		ret.type=GET_RESP
+		ret.msg=pickle.dumps(data)
+		return pickle.dumps(ret)
+	@staticmethod
+	def GETPacket(data):
+		ret = JsonPacket()
+		ret.type=GET
 		# ret.msg=data.getJson()
 		ret.msg=data
 		return pickle.dumps(ret)
