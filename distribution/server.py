@@ -72,13 +72,26 @@ def getData():
                 print("COLUMN NOT FOUND, WRONG COLUMN NAME")
                 exit(-1)
             datain_dict[col_wise_sep[0]]= col_wise_sep[1]
-        datain = json.dumps(datain_dict)
+        
             
         # datain = Data.createDataPack(datain,"data")
+        whereclause = ''
+        if input_sep_vals[0] == UPDATE:
+            whereclause = input("input WHERE CLAUSE : ")
+            datain_dict['WHERE'] = whereclause
+            datain = json.dumps(datain_dict)
+            del datain_dict['WHERE']
+            # sendMsg = JsonPacket.UPDATEPacket(datain)
+            storage.put_data('data', datain_dict,whereclause)
+            sendMsg = JsonPacket.UPDATEPacket(datain)
+            print(sendMsg)
+
+            broadcast(sendMsg, None)
 
         
         
         if token == 0:
+            datain = json.dumps(datain_dict)
             if input_sep_vals[0] == POST:
                 sendMsg = JsonPacket.POSTPacket(datain)
                 data.append(JsonPacket(sendMsg).getJson())
@@ -86,20 +99,24 @@ def getData():
                 storage.post_data('data', datain_dict)
                 temp = storage.fetch_all('data')
                 print(temp)
-            if input_sep_vals[0] == UPDATE:
-                sendMsg = JsonPacket.UPDATEPacket(datain)
-                whereclause = input("input WHERE CLAUSE : ")
-                data.append(JsonPacket(sendMsg).getJson())
-                datain_dict['id'] = None
-                storage.put_data('data', datain_dict,whereclause)
-                temp = storage.fetch_all('data')
+            # if input_sep_vals[0] == UPDATE:
+            #     sendMsg = JsonPacket.UPDATEPacket(datain)
+            #     # whereclause = input("input WHERE CLAUSE : ")
+            #     data.append(JsonPacket(sendMsg).getJson())
+            #     # datain_dict['id'] = None
+            #     storage.put_data('data', datain_dict,whereclause)
+            #     temp = storage.fetch_all('data')
 
 
         else:
             if input_sep_vals[0] == POST : 
+                datain = json.dumps(datain_dict)
                 sendMsg = JsonPacket.POSTPacket(datain)
-            if input_sep_vals[0] == UPDATE : 
-                sendMsg = JsonPacket.UPDATEPacket(datain)
+            # if input_sep_vals[0] == UPDATE : 
+            #     whereclause = input("input WHERE CLAUSE : ")
+            #     datain_dict['WHERE'] = whereclause
+            #     datain = json.dumps(datain_dict)
+            #     sendMsg = JsonPacket.UPDATEPacket(datain)
 
             clients[token-1].send(sendMsg)
 
@@ -136,7 +153,9 @@ if __name__ == "__main__":
     print("input data to store type FETCH to get data \n[ start the query with type EXAMPLE : ---postdata---, colname value, colname value]:\n")
     # data_table_schema = 'id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, msg TEXT'
     # # Set up the 'data' table
-    storage.setup_tables('data', data_schema_dynamic)
+    if table.col_names != {}:
+        storage.setup_tables('data', data_schema_dynamic)
+        
     # storage.post_data('data', {'id':None, 'type': "hello", 'msg': "my g"})
 
     # temp = storage.fetch_all('data')

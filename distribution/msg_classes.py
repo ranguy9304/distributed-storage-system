@@ -36,7 +36,7 @@ class JsonPacket:
 			rcvmsg =pickle.loads(data)
 			if rcvmsg.type :
 				self.type=rcvmsg.type
-				if self.type==POST :
+				if self.type==POST or self.type==UPDATE:
 					self.msg=json.loads(rcvmsg.msg)
 				elif self.type==FETCH_RESP or self.type == SETUP_TABLE :
 					self.msg = pickle.loads(rcvmsg.msg)

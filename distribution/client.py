@@ -53,7 +53,10 @@ def receive():
             # sendMsg = JsonPacket.UPDATEPacket(datain)
             # whereclause = input("input WHERE CLAUSE : ")
             # data.append(JsonPacket(sendMsg).getJson())
-            recvMsg.msg['id'] = None
+            print(recvMsg.msg)
+            whereclause = recvMsg.msg['WHERE']
+            del recvMsg.msg['WHERE']
+            
             storage.put_data('data', recvMsg.msg,whereclause)
             temp = storage.fetch_all('data')
             print(temp)
